@@ -24,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.static.rule=PathPrefix(`/`)"
       - "traefik.http.routers.static.entrypoints=web"
+      - "traefik.http.routers.static.priority=1"
 
   admin:
     image: nginx:latest
@@ -33,3 +34,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.rule=PathPrefix(`/`)"
       - "traefik.http.routers.admin.entrypoints=admin"
+
+  api:
+    build:
+      context: ./api/docker
+    volumes:
+      - "./api:/code:ro"
+    working_dir: "/code"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.webapi-strip.stripprefix.prefixes=/api"
+      - "traefik.http.routers.webapi.rule=PathPrefix(`/api/`)"
+      - "traefik.http.routers.webapi.middlewares=webapi-strip@docker"
+      - "traefik.http.routers.webapi.entrypoints=web"
+      - "traefik.http.routers.webapi.priority=10"

@@ -17,7 +17,10 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "./traefik/conf:/etc/traefik/conf:ro"
-      - "./cert:/cert:ro"
+      # - "./cert:/cert:ro"
+    secrets:
+      - my_cert_crt
+      - my_cert_key
 
   static:
     image: nginx:latest
@@ -63,3 +66,10 @@ services:
       - "traefik.http.routers.webapi_https.entrypoints=websecure"
       - "traefik.http.routers.webapi_https.priority=10"
       - "traefik.http.routers.webapi_https.tls=true"
+
+secrets:
+  my_cert_crt:
+    file: ./cert/localhost.crt
+  my_cert_key:
+    file: ./cert/localhost.key
+

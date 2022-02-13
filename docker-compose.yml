@@ -12,5 +12,16 @@ services:
       - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik/traefik.yml:/etc/traefik/traefik.yml
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+
+  static:
+    image: nginx:latest
+    # ports:
+    #   - "80:80"
+    volumes:
+      - ./static:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.static.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.static.entrypoints=web"

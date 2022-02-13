@@ -1,5 +1,10 @@
 providers:
-  docker: {}
+  docker:
+    exposedByDefault: false
 
 api:
   insecure: true
+
+entrypoints:
+  web:
+    address: ":80"

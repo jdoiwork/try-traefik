@@ -8,6 +8,7 @@ services:
     ports:
       # The HTTP port
       - "80:80"
+      - "443:443"
       - "3000:3000"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
@@ -15,6 +16,8 @@ services:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./traefik/conf:/etc/traefik/conf:ro"
+      - "./cert:/cert:ro"
 
   static:
     image: nginx:latest
@@ -25,6 +28,11 @@ services:
       - "traefik.http.routers.static.rule=PathPrefix(`/`)"
       - "traefik.http.routers.static.entrypoints=web"
       - "traefik.http.routers.static.priority=1"
+      - "traefik.http.routers.static_https.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.static_https.entrypoints=websecure"
+      - "traefik.http.routers.static_https.priority=1"
+      - "traefik.http.routers.static_https.tls=true"
+
 
   admin:
     image: nginx:latest
@@ -44,7 +52,14 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.webapi-strip.stripprefix.prefixes=/api"
-      - "traefik.http.routers.webapi.rule=PathPrefix(`/api/`)"
+
+      - "traefik.http.routers.webapi.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.webapi.middlewares=webapi-strip@docker"
       - "traefik.http.routers.webapi.entrypoints=web"
       - "traefik.http.routers.webapi.priority=10"
+
+      - "traefik.http.routers.webapi_https.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.webapi_https.middlewares=webapi-strip@docker"
+      - "traefik.http.routers.webapi_https.entrypoints=websecure"
+      - "traefik.http.routers.webapi_https.priority=10"
+      - "traefik.http.routers.webapi_https.tls=true"

@@ -2,6 +2,11 @@ providers:
   docker:
     exposedByDefault: false
 
+  file:
+    directory: "/etc/traefik/conf"
+    # filename: "/etc/traefik/conf/tls.yml"
+    watch: true
+
 api:
   insecure: true
 
@@ -10,3 +15,5 @@ entrypoints:
     address: ":80"
   admin:
     address: ":3000"
+  websecure:
+    address: ":443"

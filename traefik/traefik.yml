@@ -8,3 +8,5 @@ api:
 entrypoints:
   web:
     address: ":80"
+  admin:
+    address: ":3000"
